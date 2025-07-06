@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Context Builder</title>
+    <style>
+        /* Import the Roboto Condensed font from Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap');
+        
+        body { 
+            font-family: 'Roboto Condensed', sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background-color: #2b2b2b; 
+            color: #dcdcdc; 
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            background: #1c1c1c; 
+            padding: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3); 
+            border: 2px solid #f1c40f;
+        }
+        .header { 
+            text-align: center; 
+            margin-bottom: 30px; 
+            padding: 20px;
+            border-bottom: 2px solid #f1c40f;
+        }
+        .header h1 { 
+            color: #f1c40f; 
+            margin: 0;
+        }
+        .header p { 
+            color: #dcdcdc; 
+            margin: 10px 0 0 0;
+        }
+        .section { 
+            margin-bottom: 30px; 
+        }
+        .section h2 { 
+            color: #f1c40f; 
+            border-bottom: 2px solid #f1c40f; 
+            padding-bottom: 10px; 
+        }
+        .form-group { 
+            margin-bottom: 15px; 
+        }
+        label { 
+            display: block; 
+            margin-bottom: 5px; 
+            font-weight: bold; 
+            color: #dcdcdc;
+        }
+        input, select, textarea { 
+            width: 100%; 
+            padding: 8px; 
+            border: 1px solid #666; 
+            border-radius: 4px; 
+            box-sizing: border-box; 
+            background-color: #444; 
+            color: #dcdcdc;
+        }
+        textarea { 
+            height: 100px; 
+            resize: vertical; 
+        }
+        button { 
+            background-color: #f1c40f; 
+            color: #1c1c1c; 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            margin-right: 10px; 
+            font-weight: bold;
+        }
+        button:hover { 
+            background-color: #d4ac0d; 
+        }
+        button:disabled { 
+            background-color: #666; 
+            cursor: not-allowed; 
+            color: #999;
+        }
+        .file-list { 
+            max-height: 300px; 
+            overflow-y: auto; 
+            border: 1px solid #666; 
+            padding: 10px; 
+            background-color: #3a3a3a; 
+        }
+        .file-item { 
+            margin-bottom: 5px; 
+        }
+        .file-item input { 
+            width: auto; 
+            margin-right: 10px; 
+        }
+        .file-item label {
+            color: #dcdcdc;
+        }
+        .file-list .form-group {
+            margin-bottom: 10px;
+        }
+        .file-list .form-group label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0;
+            color: #dcdcdc;
+        }
+        .file-list .form-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+            margin-bottom: 0;
+        }
+        .context-output { 
+            background-color: #3a3a3a; 
+            border: 1px solid #666; 
+            padding: 15px; 
+            border-radius: 4px; 
+            max-height: 400px; 
+            overflow-y: auto; 
+            white-space: pre-wrap; 
+            font-family: monospace; 
+            font-size: 12px; 
+            color: #dcdcdc;
+        }
+        .error { 
+            color: #ffffff; 
+            background-color: #c62828; 
+            border: 1px solid #b71c1c; 
+            padding: 10px; 
+            border-radius: 4px; 
+        }
+        .success { 
+            color: #ffffff; 
+            background-color: #2e7d32; 
+            border: 1px solid #1b5e20; 
+            padding: 10px; 
+            border-radius: 4px; 
+        }
+        .loading { 
+            text-align: center; 
+            padding: 20px; 
+        }
+        .copy-btn { 
+            background-color: #2e7d32; 
+            color: #ffffff;
+        }
+        .copy-btn:hover { 
+            background-color: #1b5e20; 
+        }
+        .tabs { 
+            display: flex; 
+            border-bottom: 1px solid #666; 
+            margin-bottom: 20px; 
+        }
+        .tab { 
+            padding: 10px 20px; 
+            cursor: pointer; 
+            border: none; 
+            background: #444; 
+            color: #dcdcdc; 
+            margin-right: 5px; 
+            border-radius: 4px 4px 0 0; 
+            font-weight: bold;
+        }
+        .tab.active { 
+            background-color: #f1c40f; 
+            color: #1c1c1c; 
+        }
+        .tab:hover { 
+            background-color: #555; 
+        }
+        .tab.active:hover { 
+            background-color: #d4ac0d; 
+        }
+        .tab-content { 
+            display: none; 
+        }
+        .tab-content.active { 
+            display: block; 
+        }
+        details {
+            margin: 10px 0;
+        }
+        details summary {
+            cursor: pointer;
+            color: #f1c40f;
+            font-weight: bold;
+            padding: 5px;
+            background-color: #444;
+            border-radius: 4px;
+        }
+        details summary:hover {
+            background-color: #555;
+        }
+        pre {
+            background-color: #3a3a3a;
+            color: #dcdcdc;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            border: 1px solid #666;
+        }
+        p {
+            color: #dcdcdc;
+        }
+        strong {
+            color: #f1c40f;
+        }
+        small {
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Interactive Context Builder</h1>
+            <p>Build optimized contexts for LLM interactions</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('setup')">Setup</button>
+            <button class="tab" onclick="showTab('task')">Task Configuration</button>
+            <button class="tab" onclick="showTab('context')">Generate Context</button>
+        </div>
+
+        <!-- Setup Tab -->
+        <div id="setup" class="tab-content active">
+            <div class="section">
+                <h2>Project Setup</h2>
+                <div class="form-group">
+                    <label for="project-path">Project Path:</label>
+                    <input type="text" id="project-path" placeholder="Enter path to your project">
+                </div>
+                <button onclick="analyzeProject()">Analyze Project</button>
+                <p><small>This will scan your project for source files, tests, configs, and build a directory structure.</small></p>
+            </div>
+
+            <div id="project-info" class="section" style="display: none;">
+                <h2>Project Information</h2>
+                <div id="project-details"></div>
+            </div>
+        </div>
+
+        <!-- Task Configuration Tab -->
+        <div id="task" class="tab-content">
+            <div class="section">
+                <h2>Select Files</h2>
+                <div id="file-list" class="file-list">
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="select-all" onchange="toggleAllFiles()">
+                            Select All Source Files
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Task Configuration</h2>
+                <div class="form-group">
+                    <label for="task-type">What do you want to do?</label>
+                    <select id="task-type" onchange="updateTaskFields()">
+                        <option value="">Select a task...</option>
+                        <option value="add-feature">Add a new feature</option>
+                        <option value="change-functionality">Change existing functionality</option>
+                        <option value="explain-functionality">Explain how something works</option>
+                        <option value="explain-architecture">Explain the overall architecture</option>
+                        <option value="debug-error">Debug an error/issue</option>
+                    </select>
+                </div>
+                
+                <!-- Dynamic task-specific fields -->
+                <div id="task-fields"></div>
+            </div>
+        </div>
+
+        <!-- Context Tab -->
+        <div id="context" class="tab-content">
+            <div class="section">
+                <h2>Generated Context</h2>
+                <button onclick="buildContext()">Generate Context</button>
+                <button class="copy-btn" onclick="copyContext()">Copy to Clipboard</button>
+                <div id="context-output" class="context-output"></div>
+            </div>
+        </div>
+
+        <div id="messages"></div>
+    </div>
+
+    <script>
+        let currentAnalysis = null;
+
+        function showTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            document.querySelectorAll('.tab').forEach(tab => {
+                if (tab.getAttribute('onclick') === `showTab('${tabName}')`) {
+                    tab.classList.add('active');
+                }
+            });
+        }
+
+        function showMessage(message, type = 'info') {
+            const messagesDiv = document.getElementById('messages');
+            const messageClass = type === 'error' ? 'error' : 'success';
+            messagesDiv.innerHTML = `<div class="${messageClass}">${message}</div>`;
+            setTimeout(() => messagesDiv.innerHTML = '', 5000);
+        }
+
+        async function analyzeProject() {
+            const projectPath = document.getElementById('project-path').value;
+            if (!projectPath) {
+                showMessage('Please enter a project path', 'error');
+                return;
+            }
+
+            showMessage('Analyzing project...', 'info');
+
+            try {
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({project_path: projectPath})
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentAnalysis = data.analysis;
+                    displayProjectInfo(data.analysis);
+                    populateFileList(data.analysis);
+                    showMessage('Project analyzed successfully!', 'success');
+                } else {
+                    showMessage(data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Error analyzing project: ' + error.message, 'error');
+            }
+        }
+
+        function displayProjectInfo(analysis) {
+            const projectDetails = document.getElementById('project-details');
+            projectDetails.innerHTML = `
+                <p><strong>Project:</strong> ${analysis.project_name}</p>
+                <p><strong>Source Files:</strong> ${analysis.source_files.length}</p>
+                <p><strong>Test Files:</strong> ${analysis.test_files.length}</p>
+                <p><strong>Config Files:</strong> ${analysis.config_files.length}</p>
+                ${analysis.main_modules.length > 0 ? `<p><strong>Main Modules:</strong> ${analysis.main_modules.join(', ')}</p>` : ''}
+                <details>
+                    <summary>Project Structure</summary>
+                    <pre>${analysis.structure}</pre>
+                </details>
+            `;
+            document.getElementById('project-info').style.display = 'block';
+        }
+
+        function populateFileList(analysis) {
+            const fileList = document.getElementById('file-list');
+            
+            // Clear existing content but keep the select all checkbox
+            const selectAllDiv = fileList.querySelector('.form-group');
+            fileList.innerHTML = '';
+            fileList.appendChild(selectAllDiv);
+
+            analysis.source_files.forEach(file => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <label>
+                        <input type="checkbox" value="${file}" class="file-checkbox">
+                        ${file}
+                    </label>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        }
+
+        function updateTaskFields() {
+            const taskType = document.getElementById('task-type').value;
+            const taskFields = document.getElementById('task-fields');
+            
+            let fieldsHtml = '';
+            
+            switch(taskType) {
+                case 'add-feature':
+                    fieldsHtml = `
+                        <div class="form-group">
+                            <label for="feature-description">Describe the feature you want to add:</label>
+                            <textarea id="feature-description" placeholder="E.g., 'Add user authentication with email/password login'"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="requirements">Any specific requirements?</label>
+                            <textarea id="requirements" placeholder="E.g., 'Should integrate with existing user management system'"></textarea>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'change-functionality':
+                    fieldsHtml = `
+                        <div class="form-group">
+                            <label for="current-behavior">What currently happens?</label>
+                            <textarea id="current-behavior" placeholder="Describe the current behavior"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="desired-behavior">What should happen instead?</label>
+                            <textarea id="desired-behavior" placeholder="Describe the desired behavior"></textarea>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'explain-functionality':
+                    fieldsHtml = `
+                        <div class="form-group">
+                            <label for="functionality-focus">What specific functionality do you want explained?</label>
+                            <input type="text" id="functionality-focus" placeholder="E.g., 'user authentication flow' or 'data processing pipeline'">
+                        </div>
+                        <div class="form-group">
+                            <label for="explanation-level">Level of detail:</label>
+                            <select id="explanation-level">
+                                <option value="high-level">High-level overview</option>
+                                <option value="detailed">Detailed explanation</option>
+                                <option value="step-by-step">Step-by-step walkthrough</option>
+                            </select>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'explain-architecture':
+                    fieldsHtml = `
+                        <div class="form-group">
+                            <label for="architecture-focus">Any specific architectural aspects to focus on?</label>
+                            <input type="text" id="architecture-focus" placeholder="E.g., 'data flow', 'component relationships', 'design patterns'">
+                        </div>
+                        <div class="form-group">
+                            <label for="audience">Who is this explanation for?</label>
+                            <select id="audience">
+                                <option value="developer">New developer joining the project</option>
+                                <option value="technical">Technical stakeholder</option>
+                                <option value="architect">Solution architect</option>
+                            </select>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'debug-error':
+                    fieldsHtml = `
+                        <div class="form-group">
+                            <label for="error-message">Error message (if any):</label>
+                            <textarea id="error-message" placeholder="Paste the error message here"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="error-context">When does this error occur?</label>
+                            <textarea id="error-context" placeholder="Describe the steps that lead to the error"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="expected-behavior">What should happen instead?</label>
+                            <textarea id="expected-behavior" placeholder="Describe the expected behavior"></textarea>
+                        </div>
+                    `;
+                    break;
+                    
+                default:
+                    fieldsHtml = '';
+            }
+            
+            taskFields.innerHTML = fieldsHtml;
+        }
+
+        function toggleAllFiles() {
+            const selectAll = document.getElementById('select-all');
+            const checkboxes = document.querySelectorAll('.file-checkbox');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+        }
+
+        function getSelectedFiles() {
+            const checkboxes = document.querySelectorAll('.file-checkbox:checked');
+            return Array.from(checkboxes).map(cb => cb.value);
+        }
+
+        async function buildContext() {
+            if (!currentAnalysis) {
+                showMessage('Please analyze a project first', 'error');
+                return;
+            }
+
+            const selectedFiles = getSelectedFiles();
+            if (selectedFiles.length === 0) {
+                showMessage('Please select at least one file', 'error');
+                return;
+            }
+
+            const taskType = document.getElementById('task-type').value;
+            if (!taskType) {
+                showMessage('Please select a task type', 'error');
+                return;
+            }
+
+            // Collect task-specific data
+            let taskData = { task_type: taskType };
+            
+            switch(taskType) {
+                case 'add-feature':
+                    const featureDesc = document.getElementById('feature-description').value;
+                    const requirements = document.getElementById('requirements').value;
+                    if (!featureDesc) {
+                        showMessage('Please describe the feature you want to add', 'error');
+                        return;
+                    }
+                    taskData.description = featureDesc;
+                    taskData.requirements = requirements;
+                    break;
+                    
+                case 'change-functionality':
+                    const currentBehavior = document.getElementById('current-behavior').value;
+                    const desiredBehavior = document.getElementById('desired-behavior').value;
+                    if (!currentBehavior || !desiredBehavior) {
+                        showMessage('Please describe both current and desired behavior', 'error');
+                        return;
+                    }
+                    taskData.description = `Change functionality: ${currentBehavior} → ${desiredBehavior}`;
+                    taskData.current_behavior = currentBehavior;
+                    taskData.desired_behavior = desiredBehavior;
+                    break;
+                    
+                case 'explain-functionality':
+                    const functionalityFocus = document.getElementById('functionality-focus').value;
+                    const explanationLevel = document.getElementById('explanation-level').value;
+                    if (!functionalityFocus) {
+                        showMessage('Please specify what functionality to explain', 'error');
+                        return;
+                    }
+                    taskData.description = `Explain functionality: ${functionalityFocus}`;
+                    taskData.focus_area = functionalityFocus;
+                    taskData.explanation_level = explanationLevel;
+                    break;
+                    
+                case 'explain-architecture':
+                    const architectureFocus = document.getElementById('architecture-focus').value;
+                    const audience = document.getElementById('audience').value;
+                    taskData.description = 'Explain the overall architecture';
+                    taskData.focus_area = architectureFocus;
+                    taskData.audience = audience;
+                    break;
+                    
+                case 'debug-error':
+                    const errorMessage = document.getElementById('error-message').value;
+                    const errorContext = document.getElementById('error-context').value;
+                    const expectedBehavior = document.getElementById('expected-behavior').value;
+                    if (!errorContext) {
+                        showMessage('Please describe when the error occurs', 'error');
+                        return;
+                    }
+                    taskData.description = 'Debug an error/issue';
+                    taskData.error_message = errorMessage;
+                    taskData.error_context = errorContext;
+                    taskData.expected_behavior = expectedBehavior;
+                    break;
+            }
+
+            const contextData = {
+                ...taskData,
+                selected_files: selectedFiles
+            };
+
+            showMessage('Building context...', 'info');
+
+            try {
+                const response = await fetch('/api/build-context', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(contextData)
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('context-output').textContent = data.context;
+                    showMessage('Context generated successfully!', 'success');
+                } else {
+                    showMessage(data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Error building context: ' + error.message, 'error');
+            }
+        }
+
+        async function copyContext() {
+            const contextOutput = document.getElementById('context-output');
+            if (!contextOutput.textContent) {
+                showMessage('No context to copy', 'error');
+                return;
+            }
+
+            try {
+                await navigator.clipboard.writeText(contextOutput.textContent);
+                showMessage('Context copied to clipboard!', 'success');
+            } catch (error) {
+                showMessage('Failed to copy to clipboard', 'error');
+            }
+        }
+    </script>
+</body>
+</html>
