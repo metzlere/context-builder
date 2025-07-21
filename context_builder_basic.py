@@ -143,11 +143,11 @@ def main() -> None:
         help="List of specific file names to exclude."
     )
     parser.add_argument(
-        "--ignored-dirs", type=str, nargs="*", default=['.git', 'node_modules', 'venv', '__pycache__'],
+        "--ignored-dirs", type=str, nargs="*", default=['.git', 'node_modules', 'venv', '__pycache__', '.ipynb_checkpoints'],
         help="List of directory names to ignore while scanning (default: ['.git', 'node_modules', 'venv', '__pycache__'])."
     )
     parser.add_argument(
-        "--extensions", type=str, nargs="*", default=['.py', '.js', '.html', '.css', '.json'],
+        "--extensions", type=str, nargs="*", default=['.py', '.js', '.html', '.css', '.json', '.yaml', '.yml'],
         help="File extensions to include (default: .py, .js, .html, .css, .json)."
     )
     

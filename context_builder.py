@@ -55,9 +55,9 @@ class ProjectAnalyzer:
     
     def _scan_project(self):
         """Scan project for different file types"""
-        ignore_dirs = {'.git', '__pycache__', '.pytest_cache', 'venv', '.venv', 'node_modules', 'build', 'dist', 'target'}
+        ignore_dirs = {'.git', '__pycache__', '.pytest_cache', 'venv', '.venv', 'node_modules', 'build', 'dist', 'target', '.ipynb_checkpoints'}
         
-        source_extensions = {'.py', '.js', '.ts', '.jsx', '.tsx', '.java', '.cpp', '.c', '.h', '.cs', '.go', '.rs', '.php', '.rb', '.swift', '.kt', '.scala', '.r', '.m', '.mm', '.sh', '.bat', '.ps1', '.vue', '.html', '.css', '.scss', '.sass', '.less', '.sql', '.pl', '.lua', '.dart', '.elm', '.fs', '.fsx', '.fsi', '.ml', '.mli', '.hs', '.ex', '.exs', '.clj', '.cljs', '.cljc', '.nim', '.cr', '.zig', '.jl', '.v', '.vb', '.pas', '.d', '.groovy', '.gradle', '.makefile', '.cmake', '.dockerfile'}
+        source_extensions = {'.py', '.js', '.ts', '.jsx', '.tsx', '.java', '.cpp', '.c', '.h', '.cs', '.go', '.rs', '.php', '.rb', '.swift', '.kt', '.scala', '.r', '.m', '.mm', '.sh', '.bat', '.ps1', '.vue', '.html', '.css', '.scss', '.sass', '.less', '.sql', '.pl', '.lua', '.dart', '.elm', '.fs', '.fsx', '.fsi', '.ml', '.mli', '.hs', '.ex', '.exs', '.clj', '.cljs', '.cljc', '.nim', '.cr', '.zig', '.jl', '.v', '.vb', '.pas', '.d', '.groovy', '.gradle', '.makefile', '.cmake', '.dockerfile', '.yaml', '.yml'}
         
         config_files = {'package.json', 'requirements.txt', 'setup.py', 'pyproject.toml', 'setup.cfg', 'pom.xml', 'build.gradle', 'CMakeLists.txt', 'Makefile', 'Dockerfile', 'docker-compose.yml', 'config.json', 'settings.json', '.env', '.gitignore', '.eslintrc', '.prettierrc', 'tsconfig.json', 'webpack.config.js', 'babel.config.js', 'jest.config.js', 'cargo.toml', 'go.mod', 'composer.json', 'gemfile', 'podfile'}
         
